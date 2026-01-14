@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NYPL Library Card - Add to Apple Wallet</title>
+    <title>Library Card Wallet Pass</title>
     <style>
         * {
             margin: 0;
@@ -251,13 +251,27 @@
         .form-row.color-row {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 20px;
+        }
+
+        .form-row.color-row .form-group {
+            margin-bottom: 0;
         }
 
         .form-sections-row {
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 16px;
+            align-items: start;
+        }
+
+        .form-sections-row .form-section {
+            height: 100%;
+        }
+
+        .form-sections-row .form-section legend {
+            height: 24px;
+            line-height: 24px;
         }
 
         @media (max-width: 767px) {
@@ -268,7 +282,7 @@
 
         input[type="color"] {
             width: 100%;
-            height: 50px;
+            height: 48px;
             cursor: pointer;
             padding: 4px;
             border: 2px solid #ddd;
@@ -455,10 +469,10 @@
                 <div class="pass-preview-wrapper">
                     <div class="pass-card" id="passCard">
                         <div class="pass-header">
-                            <div class="pass-logo-text" id="previewLogoText">The New York Public Library</div>
+                            <div class="pass-logo-text" id="previewLogoText">My Library</div>
                         </div>
                         <div class="pass-primary">
-                            <div class="pass-field-value" id="previewPrimary">NYPL</div>
+                            <div class="pass-field-value" id="previewPrimary">Library Card</div>
                         </div>
                         <div class="pass-secondary">
                             <div class="pass-field">
@@ -525,27 +539,18 @@
                                     type="text"
                                     id="organizationName"
                                     name="organizationName"
-                                    value="The New York Public Library"
+                                    placeholder="My Library"
                                     required
                                 >
                             </div>
                             <div class="form-group">
-                                <label for="logoText">Logo Text *</label>
+                                <label for="primaryText">Primary Text *</label>
                                 <input
                                     type="text"
-                                    id="logoText"
-                                    name="logoText"
-                                    value="The New York Public Library"
-                                    required
-                                >
-                            </div>
-                            <div class="form-group">
-                                <label for="description">Description *</label>
-                                <input
-                                    type="text"
-                                    id="description"
-                                    name="description"
-                                    value="NYPL Library Card"
+                                    id="primaryText"
+                                    name="primaryText"
+                                    placeholder="Library Card"
+                                    value="Library Card"
                                     required
                                 >
                             </div>
@@ -599,13 +604,17 @@
     <script>
         // Default configuration
         const DEFAULTS = {
-            organizationName: 'The New York Public Library',
-            logoText: 'The New York Public Library',
-            description: 'NYPL Library Card',
+            organizationName: 'My Library',
+            primaryText: 'Library Card',
             foregroundColor: '#ffffff',
             backgroundColor: '#b62824',
             labelColor: '#ffffff'
         };
+
+        // Generate description from organization name
+        function generateDescription(orgName) {
+            return (orgName || DEFAULTS.organizationName) + ' Library Card';
+        }
 
         // Get form elements
         const form = document.getElementById('passForm');
@@ -617,8 +626,7 @@
         const cardNumberInput = document.getElementById('cardNumber');
         const pinInput = document.getElementById('pin');
         const organizationNameInput = document.getElementById('organizationName');
-        const logoTextInput = document.getElementById('logoText');
-        const descriptionInput = document.getElementById('description');
+        const primaryTextInput = document.getElementById('primaryText');
         const foregroundColorInput = document.getElementById('foregroundColor');
         const backgroundColorInput = document.getElementById('backgroundColor');
         const labelColorInput = document.getElementById('labelColor');
@@ -642,8 +650,8 @@
             passCard.style.setProperty('--preview-label-color', lblColor);
 
             // Update text content
-            previewLogoText.textContent = logoTextInput.value || DEFAULTS.logoText;
-            previewPrimary.textContent = 'NYPL'; // Always NYPL
+            previewLogoText.textContent = organizationNameInput.value || DEFAULTS.organizationName;
+            previewPrimary.textContent = primaryTextInput.value || DEFAULTS.primaryText;
             previewSecondaryLabel.textContent = 'Card Number';
 
             // Update card number with placeholder if empty
@@ -654,8 +662,7 @@
         // Attach event listeners to all inputs for live preview
         [
             organizationNameInput,
-            logoTextInput,
-            descriptionInput,
+            primaryTextInput,
             foregroundColorInput,
             backgroundColorInput,
             labelColorInput,
@@ -706,14 +713,9 @@
                 errors.push('Organization name is required');
             }
 
-            // Logo text validation
-            if (!logoTextInput.value.trim()) {
-                errors.push('Logo text is required');
-            }
-
-            // Description validation
-            if (!descriptionInput.value.trim()) {
-                errors.push('Description is required');
+            // Primary text validation
+            if (!primaryTextInput.value.trim()) {
+                errors.push('Primary text is required');
             }
 
             // Color validation
@@ -779,7 +781,7 @@
                     primaryFields: [
                         {
                             key: "name",
-                            value: "NYPL"
+                            value: config.primaryText
                         }
                     ],
                     secondaryFields: [
@@ -835,10 +837,12 @@
             }
 
             // Gather configuration
+            const orgName = organizationNameInput.value.trim();
             const config = {
-                organizationName: organizationNameInput.value.trim(),
-                logoText: logoTextInput.value.trim(),
-                description: descriptionInput.value.trim(),
+                organizationName: orgName,
+                logoText: orgName,
+                primaryText: primaryTextInput.value.trim(),
+                description: generateDescription(orgName),
                 foregroundColor: foregroundColorInput.value,
                 backgroundColor: backgroundColorInput.value,
                 labelColor: labelColorInput.value
