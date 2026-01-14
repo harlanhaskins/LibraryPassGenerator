@@ -1,0 +1,33 @@
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved
+*.xcodeproj
+
+# Xcode
+xcuserdata/
+DerivedData/
+*.xcworkspace
+
+# Environment files
+.env
+.env.local
+secrets.json
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Build artifacts
+*.swiftmodule
+*.swiftdoc
+
+# Pass assets (except README)
+PassAssets/*.png
+PassAssets/*.jpg
+
+# Claude
+.claude
